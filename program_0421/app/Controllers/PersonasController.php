@@ -8,8 +8,7 @@ use App\Models\Personas;
 class PersonasController extends BaseController
 {
 
-  public function __construct()
-  {
+  public function __construct(){
   }
 
   public function index()
@@ -22,36 +21,15 @@ class PersonasController extends BaseController
 
   public function create()
   {
-
     return view('personas/create');
   }
 
   public function store()
   {
     $request = service('request');
+    //$fileImage = $this->request->getFile('image');
     $postData = $request->getPost();
-    //$Files = $request-> getFile('image');
-    $FilesA = $request->getPost('image');
-
-    echo '<script>console.log(' . json_encode($FilesA) . ')</script>';
-    echo ('asd');
-
-    //Codigo Upload imagenes
-    $fileName = basename($_FILES["file"]["name"]);
-    echo ($fileName);
-    $targetDir = "uploads/";
-    $targetFilePath = $targetDir . $fileName;
-    $fileType = pathinfo($targetFilePath, PATHINFO_EXTENSION);
-
-    $allowTypes = array('jpg', 'png', 'jpeg', 'gif', 'pdf');
-    if (in_array($fileType, $allowTypes)) {
-      move_uploaded_file($_FILES["file"]["tmp_name"], $targetFilePath);
-    }
-
-
-    $image = $FilesA;
-    $imgContent = addslashes(file_get_contents($image));
-
+    //$fileI = $request->getPost('image');
 
     if (isset($postData['submit'])) {
       ##Validation
@@ -68,12 +46,31 @@ class PersonasController extends BaseController
         return redirect()->route('personas/create')->withInput()->with('validation', $this->validator);
       } else {
         $personas = new Personas();
-        $intereses = isset($postData['intereses']) ? $postData['intereses'] : null;
+        //Cargar imagen a la carperda "Upload" y subir el nombre de la imagen al Database 
+        
+        $file = $this->request->getFile('image');
+        $name = $file->getName();
+        $tempFile = $file->getTempName();
+        $file->move(WRITEPATH, 'upload');
 
+        // $targetDir = "upload/";
+        // $file = $this->request->getFile('image');
+        // $name = $file->getName();
+        // $filetmp=$file->getTempName();
+        // $fileName = $request->getFiles();
+        // $targetFilePath = $targetDir . $fileName;
+        // echo ('<script>console.log(' . json_encode($this->request->getFile('image'), JSON_HEX_TAG) . ')</script>');
+        // //echo($fileImage);
+        //echo($fileName);
+        // echo($request->getTempName('image'));
+        // $fileType = pathinfo($targetFilePath, PATHINFO_EXTENSION);
+        // move_uploaded_file($_FILES['image']['tmp_name'], $targetFilePath);
+
+        //Convertir el array de intereses en un solo String
+        $intereses = isset($postData['intereses']) ? $postData['intereses'] : null;
         $arrayIntereses = null;
         $num_array = count($intereses);
         $contador = 0;
-
         if ($num_array > 0) {
           foreach ($intereses as $key => $value) {
             if ($contador != $num_array - 1)
@@ -86,7 +83,7 @@ class PersonasController extends BaseController
 
         $data = [
           'nombre' => $postData['nombre'],
-          'image' => $imgContent,
+          'image' => $name,
           'correo' => $postData['correo'],
           'telefono' => $postData['telefono'],
           'estado_civil' => $postData['estado_civil'],
@@ -98,12 +95,10 @@ class PersonasController extends BaseController
         if ($personas->insert($data)) {
           session()->setFlashdata('message', 'Added Successfully!');
           session()->setFlashdata('alert-class', 'alert-success');
-
           return redirect()->route('personas/create');
         } else {
           session()->setFlashdata('message', 'Data not saved!');
           session()->setFlashdata('alert-class', 'alert-danger');
-
           return redirect()->route('personas/create')->withInput();
         }
       }
@@ -185,17 +180,14 @@ class PersonasController extends BaseController
     $personas = new Personas();
 
     ##Check Record
-
     if ($personas->find($id)) {
       $personas->delete($id);
-
       session()->setFlashdata('message', 'Deleted Successfully!');
       session()->setFlashdata('alert-class', 'alert-success');
     } else {
       session()->setFlashdata('message', 'Record not found!');
       session()->setFlashdata('alert-class', 'alert-danger');
     }
-
     return redirect()->route('/');
   }
 }

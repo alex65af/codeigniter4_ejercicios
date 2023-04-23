@@ -25,10 +25,10 @@ if (session()->has('message')) {
 <?php $validation = \Config\Services::validation(); ?>
 <div class="row">
   <div class="col-md-12">
-    <form action="<?= site_url('personas/store') ?>" method="post">
+    <form action="<?= site_url('personas/store') ?>" method="post" enctype="multipart/form-data">
       <div class="form-group">
         <label for="nombre">Nombre:</label>
-        <input type="text" class="form-control" name="nombre" required value="<?= old('correo') ?>">
+        <input type="text" class="form-control" name="nombre" required value="<?= old('nombre') ?>">
 
         <!-- Error -->
         <?php if ($validation->getError('nombre')) { ?>
@@ -45,7 +45,7 @@ if (session()->has('message')) {
 
       <div class="form-group">
         <label for="correo">Correo</label>
-        <input type="email" class="form-control" name="correo" required><?= old('correo') ?></input>
+        <input type="email" class="form-control" name="correo" required value="<?= old('correo') ?>"></input>
 
         <!-- Error -->
         <?php if ($validation->getError('correo')) { ?>
@@ -58,7 +58,7 @@ if (session()->has('message')) {
 
       <div class="form-group">
         <label for="telefono">Telefono</label>
-        <input type="text" class="form-control" name="telefono" required></input>
+        <input type="text" class="form-control" name="telefono" required value="<?= old('telefono') ?>"></input>
 
         <!-- Error -->
 

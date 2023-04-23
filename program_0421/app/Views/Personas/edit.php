@@ -107,40 +107,36 @@ if (session()->has('message')) {
                 ?>
                 <div class="col-sm-10">
                     <label class="checkbox-inline">
-                        <input 
-                            <?php if (in_array("Libros", $arr)) { echo "checked"; } ?> 
-                            type="checkbox" id="intereses[]" name="intereses[]" value="Libros"
-                        >Libros
+                        <input <?php if (in_array("Libros", $arr)) {
+                                    echo "checked";
+                                } ?> type="checkbox" id="intereses[]" name="intereses[]" value="Libros">Libros
                     </label>
 
                     <label class="checkbox-inline">
-                        <input 
-                            <?php if (in_array("Musica", $arr)) { echo "checked"; } ?> 
-                            type="checkbox" id="intereses[]" name="intereses[]" value="Musica"
-                        > Musica
+                        <input <?php if (in_array("Musica", $arr)) {
+                                    echo "checked";
+                                } ?> type="checkbox" id="intereses[]" name="intereses[]" value="Musica"> Musica
                     </label>
 
                     <label class="checkbox-inline">
-                        <input 
-                            <?php if (in_array("Deportes", $arr)) { echo "checked"; } ?> 
-                            type="checkbox" id="intereses[]" name="intereses[]" value="Deportes"
-                        > Deportes
+                        <input <?php if (in_array("Deportes", $arr)) {
+                                    echo "checked";
+                                } ?> type="checkbox" id="intereses[]" name="intereses[]" value="Deportes"> Deportes
                     </label>
 
                     <label class="checkbox-inline">
-                        <input 
-                            <?php if (in_array("Otros", $arr)) { echo "checked"; } ?> 
-                            type="checkbox" id="intereses[]" name="intereses[]" value="Otros"
-                        > Otros
+                        <input <?php if (in_array("Otros", $arr)) {
+                                    echo "checked";
+                                } ?> type="checkbox" id="intereses[]" name="intereses[]" value="Otros"> Otros
                     </label>
                 </div>
             </div>
 
-            </div>
-
-            <button type="submit" class="btn btn-success" name="submit">Submit</button>
-        </form>
     </div>
+
+    <button type="submit" class="btn btn-success" name="submit">Submit</button>
+    </form>
+</div>
 
 </div>
 
