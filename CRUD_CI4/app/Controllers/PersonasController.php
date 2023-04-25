@@ -25,7 +25,13 @@ class PersonasController extends ResourceController
      */
     public function show($id = null)
     {
-        //
+        $data = $this->model->find($id);
+        // $fileDir = WRITEPATH.'uploads/'.$data['image'];
+        // $data['image'] = $fileDir;
+        if (is_null($data)) {
+            return $this->fail(['error' => 'Project does not exist'], 404);
+        }
+        return $this->respond($data, 200);
     }
     /**
      * Create a new resource object, from "posted" parameters
@@ -36,7 +42,7 @@ class PersonasController extends ResourceController
     {
         $file = $this->request->getFile('image');
         $newName = $file->getRandomName();
-        $file->move(WRITEPATH.'uploads', $newName);
+        $file->move(WRITEPATH . 'uploads', $newName);
         $data = [
             'nombre' => $this->request->getPost('nombre'),
             'image' => $newName,
@@ -46,7 +52,6 @@ class PersonasController extends ResourceController
             'hijos' => $this->request->getPost('hijos'),
             'intereses' => $this->request->getPost('intereses')
         ];
-        
         if ($this->model->insert($data) === false) {
             $response = [
                 'errors' => $this->model->errors(),

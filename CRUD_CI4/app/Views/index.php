@@ -89,7 +89,6 @@
                                 <input type="radio" id="hijos" name="hijos" value="1" checked>SI
                                 <input type="radio" id="hijos" name="hijos" value="0">NO
                             </div>
-
                         </div>
                         <div class="form-group">
                             <label for="intereses">Intereses</label>
@@ -100,9 +99,6 @@
                                 <input type="checkbox" id="intereses" name="intereses" value="Otros"> Otros
                             </div>
                         </div>
-
-
-
                         <button type="submit" class="btn btn-outline-primary mt-3" id="save-project-btn">Save Project</button>
                     </form>
                 </div>
@@ -116,14 +112,27 @@
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title">Project Information</h5>
+                    <h5 class="modal-title">Persona Information</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <b>Name:</b>
-                    <p id="name-info"></p>
-                    <b>Description:</b>
-                    <p id="description-info"></p>
+                    <div id="image-info">
+
+                    </div>
+
+                    <b>Nombre:</b>
+                    <p id="nombre-info"></p>
+                    <b>Correo:</b>
+                    <p id="correo-info"></p>
+                    <b>Telefono:</b>
+                    <p id="telefono-info"></p>
+                    <b>Estado Civil:</b>
+                    <p id="estado_civil-info"></p>
+                    <b>Hijos:</b>
+                    <p id="hijos-info"></p>
+                    <b>Intereses:</b>
+                    <p id="intereses-info"></p>
+
                 </div>
             </div>
         </div>
@@ -146,7 +155,7 @@
                     for (var i = 0; i < projects.length; i++) {
                         let showBtn = '<button ' +
                             ' class="btn btn-outline-info" ' +
-                            ' onclick="showProject(' + projects[i].id + ')">Show' +
+                            ' onclick="showPersona(' + projects[i].id + ')">Show' +
                             '</button> ';
                         let editBtn = '<button ' +
                             ' class="btn btn-outline-success" ' +
@@ -227,16 +236,6 @@
             data.append('estado_civil', $('#estado_civil').val());
             data.append('hijos', $('#hijos:checked').val());
             data.append('intereses', intereses);
-
-
-            // data = {
-            //     nombre: $("#nombre").val(),
-            //     correo: $("#correo").val(),
-            //     telefono: $("#telefono").val(),
-            //     estado_civil: $("#estado_civil").val(),
-            //     hijos: $("#hijos:checked").val(),
-            //     intereses: intereses,
-            // };
             $.ajax({
                 url: url,
                 method: "POST",
@@ -282,6 +281,35 @@
                             '</div>';
                         $("#error-div").html(errorHtml);
                     }
+                }
+            });
+        }
+
+        function showPersona(id) {
+            $("#nombre-info").html("");
+            $("#image-info").html("");
+            $("#correo-info").html("");
+            $("#telefono-info").html("");
+            $("#hijos-info").html("");
+            $("#estado_civil-info").html("");
+            $("#intereses-info").html("");
+            let url = $('meta[name=app-url]').attr("content") + "index.php/personascontroller/show/" + id + "";
+            $.ajax({
+                url: url,
+                method: "GET",
+                success: function(response) {
+                    let personas = response
+                    $("#nombre-info").html(personas.nombre);
+                    $("#image-info").html('<img src="<?=base_url()?>../writable/uploads/'+personas.image+'" alt="">');
+                    $("#correo-info").html(personas.correo);
+                    $("#telefono-info").html(personas.telefono);
+                    $("#hijos-info").html(personas.hijos);
+                    $("#estado_civil-info").html(personas.estado_civil);
+                    $("#intereses-info").html(personas.intereses);
+                    $("#view-modal").modal('show');
+                },
+                error: function(response) {
+                    console.log(response.responseJSON)
                 }
             });
         }
