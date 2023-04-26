@@ -26,8 +26,8 @@ class PersonasController extends ResourceController
     public function show($id = null)
     {
         $data = $this->model->find($id);
-        // $fileDir = WRITEPATH.'uploads/'.$data['image'];
-        // $data['image'] = $fileDir;
+        $fileDir = WRITEPATH . 'uploads/' . $data['image'];
+        $data['image'] = $fileDir;
         if (is_null($data)) {
             return $this->fail(['error' => 'Project does not exist'], 404);
         }
@@ -89,6 +89,7 @@ class PersonasController extends ResourceController
      */
     public function delete($id = null)
     {
-        //
+        $this->model->delete($id);
+        return $this->respond(['message' => 'Deleted Successfully'], 200);
     }
 }
