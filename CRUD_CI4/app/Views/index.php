@@ -9,16 +9,14 @@
    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
-
 </head>
 
 <body>
-
    <div class="container">
       <h2 class="text-center mt-5 mb-3">CodeIgniter Project Manager</h2>
       <div class="card">
          <div class="card-header">
-            <button class="btn btn-outline-primary" onclick="createProject()">
+            <button class="btn btn-outline-primary" onclick="createPersona()">
                Create New Project
             </button>
          </div>
@@ -40,9 +38,7 @@
                   </tr>
                </thead>
                <tbody id="projects-table-body">
-
                </tbody>
-
             </table>
          </div>
       </div>
@@ -155,11 +151,11 @@
                      '</button> ';
                   let editBtn = '<button ' +
                      ' class="btn btn-outline-success" ' +
-                     ' onclick="editProject(' + projects[i].id + ')">Edit' +
+                     ' onclick="editPersona(' + projects[i].id + ')">Edit' +
                      '</button> ';
                   let deleteBtn = '<button ' +
                      ' class="btn btn-outline-danger" ' +
-                     ' onclick="destroyProject(' + projects[i].id + ')">Delete' +
+                     ' onclick="destroyPersona(' + projects[i].id + ')">Delete' +
                      '</button>';
                   let projectRow = '<tr>' +
                      '<td>' + projects[i].nombre + '</td>' +
@@ -179,23 +175,22 @@
             }
          });
       }
-
       /*
           check if form submitted is for creating or updating
       */
       $("#save-project-btn").click(function(event) {
          event.preventDefault();
          if ($("#update_id").val() == null || $("#update_id").val() == "") {
-            storeProject();
+            storePersona();
          } else {
-            updateProject();
+            updatePersona();
          }
       })
       /*
           Mostrar el modal para crear con un 
           formulario con los campos vacios     
       */
-      function createProject() {
+      function createPersona() {
          $("#alert-div").html("");
          $("#error-div").html("");
          $("#update_id").val("");
@@ -212,7 +207,7 @@
       /*
           submit the form and will be stored to the database
       */
-      function storeProject() {
+      function storePersona() {
          $("#save-project-btn").prop('disabled', true);
          let url = $('meta[name=app-url]').attr("content") + "personascontroller/create";
          var intereses = '';
@@ -276,6 +271,114 @@
          });
       }
 
+      function editPersona(id) {
+         let url = $('meta[name=app-url]').attr("content") + "personascontroller/show/" + id;
+         $.ajax({
+            url: url,
+            method: "GET",
+            success: function(response) {
+               let persona = response
+               $("#alert-div").html("");
+               $("#error-div").html("");
+               $("#update_id").val(persona.id);
+               $("#nombre").val(persona.nombre);
+               $("#correo").val(persona.correo);
+               $("#telefono").val(persona.telefono);
+               $("#estado_civil").val(persona.estado_civil);
+               $(':radio').each(function() {
+                  if(persona.hijos===this.value){
+                     $(this).prop('checked', true)
+                  }
+               })
+               $("input:radio[value='0']").prop('checked', persona.hijos == 0 ? true : false);
+               $(":checkbox").each(function() {
+                  if (persona.intereses.includes(this.value)) {
+                     $(this).prop('checked', true)
+                  } else {
+                     $(this).prop('checked', false)
+                  }
+               });
+               $("#form-modal").modal('show');
+            },
+            error: function(response) {
+               console.log(response.responseJSON)
+            }
+         });
+      }
+
+      function updatePersona() {
+         $("#save-project-btn").prop('disabled', true);
+         let url = $('meta[name=app-url]').attr("content") + "personascontroller/update/" + $("#update_id").val();
+
+         var intereses = '';
+         $("#intereses:checked").each(function() {
+            intereses += this.value + ' ';
+         });
+         // var data = new FormData();
+         // data.append('id', $('#update_id').val());
+         // data.append('nombre', $('#nombre').val());
+         // // data.append('image', $('#image')[0].files[0]);
+         // data.append('correo', $('#correo').val());
+         // data.append('telefono', $('#telefono').val());
+         // data.append('estado_civil', $('#estado_civil').val());
+         // data.append('hijos', $('#hijos:checked').val());
+         // data.append('intereses', intereses);
+          let data = {
+             id: $("#update_id").val(),
+             nombre: $("#nombre").val(),
+             correo: $("#correo").val(),
+             telefono: $("#telefono").val(),
+             estado_civil: $("#estado_civil").val(),
+             hijos: $("#hijos:checked").val(),
+             intereses: intereses
+          };
+
+         $.ajax({
+            url: url,
+            method: "PUT",
+            data: JSON.stringify(data),
+            contentType: 'application/json',
+            success: function(response) {
+               $("#save-project-btn").prop('disabled', false);
+               let successHtml = '<div class="alert alert-success" role="alert"><b>Project Updated Successfully</b></div>';
+               $("#alert-div").html(successHtml);
+               $("#nombre").val("");
+               $("#correo").val("");
+               $("#telefono").val("");
+               $("#estado_civil").val("");
+               $("input:radio[value='1']").prop('checked', true);
+               $(":checkbox:checked").each(function() {
+                  this.click();
+               });
+               console.log(data);
+               console.log(response);
+               showAllProjects();
+               $("#form-modal").modal('hide');
+            },
+            error: function(response) {
+               console.log(response);
+               $("#save-project-btn").prop('disabled', false);
+               if (typeof response.responseJSON.messages.errors !== 'undefined') {
+                  let errors = response.responseJSON.messages.errors;
+                  let descriptionValidation = "";
+                  if (typeof errors.description !== 'undefined') {
+                     descriptionValidation = '<li>' + errors.description + '</li>';
+                  }
+                  let nameValidation = "";
+                  if (typeof errors.name !== 'undefined') {
+                     nameValidation = '<li>' + errors.name + '</li>';
+                  }
+
+                  let errorHtml = '<div class="alert alert-danger" role="alert">' +
+                     '<b>Validation Error!</b>' +
+                     '<ul>' + nameValidation + descriptionValidation + '</ul>' +
+                     '</div>';
+                  $("#error-div").html(errorHtml);
+               }
+            }
+         });
+      }
+
       function showPersona(id) {
          $("#nombre-info").html("");
          $("#image-info").html("");
@@ -305,7 +408,7 @@
          });
       }
 
-      function destroyProject(id) {
+      function destroyPersona(id) {
          let url = $('meta[name=app-url]').attr("content") + "personascontroller/delete/" + id;
          $.ajax({
             url: url,

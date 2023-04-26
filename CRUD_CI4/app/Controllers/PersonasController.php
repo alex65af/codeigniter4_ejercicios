@@ -40,18 +40,19 @@ class PersonasController extends ResourceController
      */
     public function create()
     {
-        $file = $this->request->getFile('image');
-        $newName = $file->getRandomName();
-        $file->move(WRITEPATH . 'uploads', $newName);
+        // $file = $this->request->getFile('image');
+        // $newName = $file->getRandomName();
+        // $file->move(WRITEPATH . 'uploads', $newName);
         $data = [
             'nombre' => $this->request->getPost('nombre'),
-            'image' => $newName,
+            'image' => 'not image',
             'correo' => $this->request->getPost('correo'),
             'telefono' => $this->request->getPost('telefono'),
             'estado_civil' => $this->request->getPost('estado_civil'),
             'hijos' => $this->request->getPost('hijos'),
             'intereses' => $this->request->getPost('intereses')
         ];
+
         if ($this->model->insert($data) === false) {
             $response = [
                 'errors' => $this->model->errors(),
@@ -63,23 +64,33 @@ class PersonasController extends ResourceController
     }
 
     /**
-     * Return the editable properties of a resource object
-     *
-     * @return mixed
-     */
-    public function edit($id = null)
-    {
-        //
-    }
-
-    /**
      * Add or update a model resource, from "posted" properties
      *
      * @return mixed
      */
     public function update($id = null)
     {
-        //
+        $data = [
+            'nombre' => $this->request->getVar('nombre'),
+            'image' => 'not image',
+            'correo' => $this->request->getVar('correo'),
+            'telefono' => $this->request->getVar('telefono'),
+            'estado_civil' => $this->request->getVar('estado_civil'),
+            'hijos' => $this->request->getVar('hijos'),
+            'intereses' => $this->request->getVar('intereses')
+        ];
+  
+        if ($this->model->where('id', $id)->set($data)->update() === false)
+        {
+            // where('id', $id)->set($data)->update()
+            $response = [
+                'errors' => $this->model->errors(),
+                'message' => 'Invalid Inputs'
+            ];
+            return $this->fail($response , 409);
+        }
+  
+        return $this->respond(['message' => 'Updated Successfully'], 200);
     }
 
     /**

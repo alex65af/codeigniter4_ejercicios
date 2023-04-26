@@ -275,7 +275,6 @@
             if (typeof errors.name !== 'undefined') {
               nameValidation = '<li>' + errors.name + '</li>';
             }
-
             let errorHtml = '<div class="alert alert-danger" role="alert">' +
               '<b>Validation Error!</b>' +
               '<ul>' + nameValidation + descriptionValidation + '</ul>' +
